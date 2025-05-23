@@ -1,71 +1,106 @@
-# CoolMaster → MQTT Bridge
+# CoolMaster ↔ MQTT Bridge
 
-This project bridges a CoolMasterNet HVAC system with MQTT, enabling Home Assistant (or other MQTT consumers) to monitor and control HVAC units in real-time.
+This project connects a **CoolMasterNet HVAC controller** to **Home Assistant** (or other MQTT consumers) via a fast, reliable MQTT bridge.
 
-## 📦 Features
+It polls the CoolMasterNet system over Telnet and publishes real-time climate state, sensor data, and control topics via MQTT using Home Assistant's discovery format.
 
-- Connects to CoolMasterNet via Telnet
-- Publishes and subscribes to MQTT topics using Home Assistant-compatible payloads
-- Supports batch polling of all HVAC units
-- Reports HVAC state, temperature, mode, fan speed, and error status
+---
 
-## 🐳 Docker-based Development
+## 🧠 How It Works
 
-### 🛠 Prerequisites
+- Connects to **CoolMasterNet** via TCP (default: `192.168.1.50:10102`)
+- Publishes and subscribes to **MQTT** (default: `192.168.1.60:1883`)
+- Periodically polls all discovered HVAC units
+- Automatically:
+  - Registers devices with Home Assistant
+  - Publishes temperature, fan mode, mode, and error state
+  - Responds to MQTT control topics (`set/temperature`, `set/mode`, `set/fan_mode`)
 
-- WSL2 with Docker Engine installed (no Docker Desktop)
-- VS Code with Remote - WSL extension (optional but recommended)
+---
 
-### 🔧 Configuration
+## 🐳 Running with Docker (WSL or Linux)
 
-Edit `config.py`:
+### 📦 1. Build the image
 
-```python
-COOLMASTER_HOST = "192.168.0.252"
-COOLMASTER_PORT = 10102
-MQTT_HOST = "192.168.0.253"
-MQTT_PORT = 1883
-MQTT_USERNAME = "your-user"
-MQTT_PASSWORD = "your-pass"
-MQTT_TOPIC_PREFIX = "homeassistant/climate"
-POLL_INTERVAL = 2
-USE_BATCH_POLLING = True
-
-
-🐳 Run in Docker
-Build the image:
-
-bash
-Copy
-Edit
-docker build -t coolmaster-bridge .
-Run the container:
-
+```bash
+docker build -t coolmaster-mqtt-bridge .
+▶️ 2. Run the container
 bash
 Copy
 Edit
 docker run --rm -it \
+  --env-file .env \
   -v "$PWD":/app \
   -w /app \
   --network=host \
-  coolmaster-bridge
---network=host is important if you're connecting to LAN devices from WSL2.
+  coolmaster-mqtt-bridge
+✅ Important flags:
 
-📂 Project Structure
-arduino
+--env-file .env loads your runtime config (see below)
+
+--network=host is required to access LAN devices from WSL/Linux Docker
+
+-v "$PWD":/app mounts your code so changes reflect live (great for dev)
+
+⚙️ Environment Variables
+The app is configured via environment variables (in a .env file):
+
+env
+Copy
+Edit
+# CoolMasterNet connection
+COOLMASTER_HOST=192.168.1.50
+COOLMASTER_PORT=10102
+
+# MQTT broker connection
+MQTT_HOST=192.168.1.60
+MQTT_PORT=1883
+MQTT_USERNAME=your_user
+MQTT_PASSWORD=your_pass
+
+# MQTT topic root
+MQTT_TOPIC_PREFIX=homeassistant/climate
+
+# Polling behavior
+POLL_INTERVAL=2
+USE_BATCH_POLLING=true
+You can copy this into a file named .env in your project root.
+
+🏠 Home Assistant Integration
+This system is fully compatible with Home Assistant MQTT Discovery.
+
+Devices show up under climate.coolmaster_*
+
+Includes sensors for:
+
+Current temperature
+
+HVAC state
+
+Error status
+
+Supports:
+
+mode_command_topic
+
+fan_mode_command_topic
+
+temperature_command_topic
+
+🛠 Folder Structure
+bash
 Copy
 Edit
 .
-├── app.py
-├── config.py
+├── main.py                  # Main entrypoint
+├── config.py                # Environment loader
 ├── mqtt/
-│   └── publisher.py
+│   └── publisher.py         # MQTT publishing logic
 ├── coolmaster/
-│   └── client.py
+│   └── client.py            # Telnet control + polling
 ├── requirements.txt
-└── Dockerfile
-🧪 Development Tips
-Logs show MQTT connection, message flow, and CoolMaster commands
-
-Use Home Assistant Developer Tools to inspect entities under climate.
+├── Dockerfile
+└── .env                     # Runtime configuration (not committed)
+🧼 License
+MIT
 
