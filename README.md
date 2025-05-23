@@ -4,7 +4,7 @@ This project connects a **CoolMasterNet HVAC controller** to **Home Assistant** 
 
 The reason this exists, is becuase of the lack of local push (i.e. real time) updates for Coolmaster, this bridge emulates near real time by frequent polling. It polls the CoolMasterNet system over Telnet and publishes real-time climate state, sensor data, and control topics via MQTT using Home Assistant's discovery format.
 
-The Bridge/Docker should run on the same physical local network as the Coolmaster, as the statuses are updated at intervals of 2 seconds (configurable via POLL_INTERVAL). I would only run 1 instance of the bridge per Coolmaster to avoid taxing the device, although it is unlikely this level of polling will cause any issues. 
+The Bridge/Docker should run on the same physical local network as the Coolmaster, as the statuses are updated at intervals of 2 seconds (configurable via POLL_INTERVAL). I would only run 1 instance of the bridge per Coolmaster to avoid taxing the device, although it is unlikely this level of polling will cause any issues. The Bridge polls all devices using LS2, avoiding looping through each device, and uses a built-in cache to only fire updates to MQTT. Tested with 15 Diakin HVAC's connected to Coolmaster.
 
 ---
 
