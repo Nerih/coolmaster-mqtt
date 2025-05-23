@@ -2,17 +2,19 @@
 
 This project connects a **CoolMasterNet HVAC controller** to **Home Assistant** (or other MQTT consumers) via a fast, reliable MQTT bridge.
 
-It polls the CoolMasterNet system over Telnet and publishes real-time climate state, sensor data, and control topics via MQTT using Home Assistant's discovery format.
+The reason this exists, is becuase of the lack of local push (i.e. real time) updates for Coolmaster, this bridge emulates near real time by frequent polling. It polls the CoolMasterNet system over Telnet and publishes real-time climate state, sensor data, and control topics via MQTT using Home Assistant's discovery format.
+
+The Bridge/Docker should run on the same physical local network as the Coolmaster, as the statuses are updated at intervals of 2 seconds (configurable via POLL_INTERVAL). I would only run 1 instance of the bridge per Coolmaster to avoid taxing the device, although it is unlikely this level of polling will cause any issues. 
 
 ---
 
 ## 🧠 How It Works
 
-- Connects to **CoolMasterNet** via TCP (default: `192.168.1.50:10102`)
-- Publishes and subscribes to **MQTT** (default: `192.168.1.60:1883`)
-- Periodically polls all discovered HVAC units
+- Connects to **CoolMasterNet** via TCP 
+- Publishes and subscribes to **MQTT** 
+- Periodically polls all discovered HVAC units (default: 2 seconds)
 - Automatically:
-  - Registers devices with Home Assistant
+  - Registers devices with Home Assistant on /homeassistant/climate (configurable)
   - Publishes temperature, fan mode, mode, and error state
   - Responds to MQTT control topics (`set/temperature`, `set/mode`, `set/fan_mode`)
 
