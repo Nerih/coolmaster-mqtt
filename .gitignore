@@ -1,6 +1,11 @@
+# VS Code
+.vscode/
+
 # Python
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
+*.pyd
 *.env
 .env
 
@@ -8,7 +13,3 @@ __pycache__/
 *.log
 *.pid
 *.tar
-docker-compose.override.yml
-
-# VS Code
-.vscode/
