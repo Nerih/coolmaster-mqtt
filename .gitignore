@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*.env
+.env
+
+# Docker
+*.log
+*.pid
+*.tar
+docker-compose.override.yml
+
+# VS Code
+.vscode/
