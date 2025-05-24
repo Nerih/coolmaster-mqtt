@@ -46,10 +46,6 @@ docker run --rm -it \
 
 ⚙️ Environment Variables
 The app is configured via environment variables (in a .env file):
-
-env
-Copy
-Edit
 # CoolMasterNet connection
 COOLMASTER_HOST=192.168.1.50
 COOLMASTER_PORT=10102
