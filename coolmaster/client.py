@@ -148,6 +148,8 @@ class CoolMasterClient:
                 await self._make_request(f"off {uid}")
             elif mode.lower() in ["cool", "auto", "heat", "dry", "fan"]:
                 print(f"{datetime.now().strftime('%H:%M:%S')} ❄️ Setting {uid} mode to {mode}")
+                #ensure unit is turned on in addition to setting the mode to cool/auto/heat etc.
+                await self._make_request(f"on {uid}")
                 await self._make_request(f"{mode.lower()} {uid}")
             else:
                 print(f"⚠️ Ignoring unknown mode '{mode}' for {uid}")
