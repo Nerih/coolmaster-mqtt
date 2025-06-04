@@ -113,12 +113,14 @@ class CoolMasterClient:
 
                 hvac_state = "cooling" if fields[-1] == "1" else "idle"
 
+                fan_mode_map = {"med": "medium",}#added to handle HA
+
                 unit_data = {
                     "uid": unit_id,
                     "is_on": fields[1] == "ON",
                     "thermostat": float(fields[2][:-1]),
                     "temperature": float(fields[3][:-1]),
-                    "fan_mode": fields[4].lower(),
+                    "fan_mode": fan_mode_map.get(fields[4].lower(), fields[4].lower()),
                     "hvac_mode": fields[5].lower(),
                     "status": error_status,
                     "has_error": has_error,
